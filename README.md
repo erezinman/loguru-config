@@ -11,12 +11,18 @@ The configuration can have syntax similar to the one used by the native `logging
 more features quite easily (see [Extending the configurator](#extending-the-configurator) for more details).
 
 The configurator supports parsing of JSON, JSON5, YAML, and TOML files (out of the box) and can be extended to support
-other formats (again, see [Extending the configurator](#extending-the-configurator) below).
+other formats (again, see [Extending the configurator](#extending-the-configurator) below). Parsing formats other than
+JSON depends on other packages, so you may specify the extras to automatically install packages necessary for parsing
+the formats you specify.
 
 ## Installation
 
 ```bash
+# Without extras (only supports JSON if other dependencies are not manually installed)
 pip install loguru-config
+
+# With extras (specify the formats you need other than JSON)
+pip install loguru-config[json5, yaml, toml]
 ```
 
 ## Features
@@ -35,6 +41,16 @@ pip install loguru-config
   [Extending the configurator](#extending-the-configurator) below).
 
 ## Examples
+
+Use the following code to load your configuration from a file path string or a dictionary and apply to Loguru:
+
+```python
+from loguru_config import LoguruConfig
+
+your_config_file_path_or_dict = "path/to/your/configuration_file.json"
+
+LoguruConfig.load(your_config_file_path_or_dict)
+```
 
 The following YAML configuration file
 
@@ -74,6 +90,19 @@ logger.configure(
 )
 ```
 
+If you just want to get the configuration object instead of directly configuring Loguru, use the following code:
+
+```python
+from loguru_config import LoguruConfig
+
+your_config_file_path_or_dict = "path/to/your/configuration_file.json"
+
+config = LoguruConfig.load(your_config_file_path_or_dict, configure=False).parse()
+
+# You may use or modify its attributes, or later manually call this to configure Loguru
+config.configure()
+```
+
 ## Special-case parsing
 
 There are multiple special cases that are applicable. Some are recursive (i.e. after parsing, their contents will be
@@ -109,7 +138,7 @@ reparsed), and some aren't. The recursive cases will be marked as such in their 
    Some notes on this tag:
     - To escape curly braces, use double-curly braces (`{{` evaluates to `"{"`).
     - For now, specifying the individual formats of the formatted placeholders is not supported (e.g. one can not
-      specify `"{number:.3f}")` because `:` is used in the tag prefixes. This might be resolved in the future.
+      specify `"{number:.3f}"` because `:` is used in the tag prefixes). This might be resolved in the future.
 6. `file://` (recursive) - for cases when you wish parts of the configuration to be shared among different
    configurations, one can do it using this tag. This tag loads the contents of the file (the same way the original file
    is loaded), and parses them to be inplace of the given tag. As an example, consider the case where multiple

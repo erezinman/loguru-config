@@ -14,6 +14,11 @@ setup(
     install_requires=[
         'loguru>=0.7.0'
     ],
+    extras_require={
+        "json5": ["pyjson5"],
+        "yaml": ["PyYAML"],
+        "toml": ["tomli"],
+    },
     classifiers=[
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Developers',

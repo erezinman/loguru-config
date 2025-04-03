@@ -1,6 +1,6 @@
 def load_toml_config(config_str: str) -> dict:
-    import toml
-    return toml.loads(config_str)
+    import tomli
+    return tomli.loads(config_str)
 
 
 def load_json_config(config_str: str) -> dict:
